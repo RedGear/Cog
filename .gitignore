@@ -1,0 +1,15 @@
+#IntelliJ
+.idea
+*.iml
+
+#Eclipse
+.project
+.classpath
+.settings
+
+
+#Gradle
+.gradle
+build
+
+
