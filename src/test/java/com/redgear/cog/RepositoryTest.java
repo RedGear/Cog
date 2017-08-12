@@ -29,6 +29,7 @@ public class RepositoryTest {
         Assert.assertEquals(Arrays.asList(dillon, malcolm), personRepo.findByLastName("Callis"));
         Assert.assertEquals(jenny, personRepo.findOneByFullName("Jenny", "Diesel"));
         Assert.assertEquals(dillon, personRepo.findOneFutureByFullName("Dillon", "Callis").get(5, TimeUnit.SECONDS));
+        Assert.assertEquals(Arrays.asList(dillon, malcolm, jenny), personRepo.getAllPeopleAsync().toList().get(5, TimeUnit.SECONDS));
     }
 
 }

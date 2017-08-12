@@ -3,11 +3,10 @@ package com.redgear.cog.impl.resultmapper;
 import com.redgear.cog.CogResultMapper;
 import com.redgear.cog.CogResultMapperFactory;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 
 public class IterableResultMapperFactory<T> implements CogResultMapperFactory<T, Iterable> {
-
-    private final IteratorResultMapperFactory<T> source = new IteratorResultMapperFactory<>();
 
     @Override
     public Class<Iterable> type() {
@@ -23,21 +22,21 @@ public class IterableResultMapperFactory<T> implements CogResultMapperFactory<T,
     public CogResultMapper<T, Iterable> builder() {
         return new CogResultMapper<T, Iterable>() {
 
-            CogResultMapper<T, Iterator> iteratorSource = source.builder();
+            ArrayList<T> items = new ArrayList<>();
 
             @Override
             public void add(T next) {
-                iteratorSource.add(next);
+                items.add(next);
             }
 
             @Override
             public void complete() {
-                iteratorSource.complete();
+                items.trimToSize();
             }
 
             @Override
             public Iterable build() {
-                return () -> iteratorSource.build();
+                return items;
             }
         };
     }

@@ -74,6 +74,7 @@ public class CogClientBuilderImpl implements CogClientBuilder {
         baseMapperFactorys.add(new IteratorResultMapperFactory());
         baseMapperFactorys.add(new OptionalResultMapperFactory());
         baseMapperFactorys.add(new StreamResultMapperFactory());
+        baseMapperFactorys.add(new ResultSourceResultMapperFactory());
         baseMapperFactorys.trimToSize();
     }
 
@@ -95,51 +96,60 @@ public class CogClientBuilderImpl implements CogClientBuilder {
         });
     }
 
-    @Override public CogClientBuilder setDataSource(DataSource source) {
+    @Override
+    public CogClientBuilder setDataSource(DataSource source) {
         this.source = source;
         return this;
     }
 
-    @Override public CogDataSourceBuilder buildDataSource() {
+    @Override
+    public CogDataSourceBuilder buildDataSource() {
         return new CogDataSourceBuilderImpl(this);
     }
 
-    @Override public CogClientBuilder addTypeConverter(TypeConverter converter) {
+    @Override
+    public CogClientBuilder addTypeConverter(TypeConverter converter) {
         converters.add(converter);
         return this;
     }
 
-    @Override public CogClientBuilder addTypeConverters(TypeConverter ...converters) {
+    @Override
+    public CogClientBuilder addTypeConverters(TypeConverter... converters) {
         Collections.addAll(this.converters, converters);
         return this;
     }
 
-    @Override public CogClientBuilder addTypeConverters(Collection<TypeConverter> converters) {
+    @Override
+    public CogClientBuilder addTypeConverters(Collection<TypeConverter> converters) {
         this.converters.addAll(converters);
         return this;
     }
 
-    @Override public CogClientBuilder setExecutorService(ExecutorService ioPool) {
+    @Override
+    public CogClientBuilder setExecutorService(ExecutorService ioPool) {
         this.ioPool = ioPool;
         return this;
     }
 
-    @Override public CogClientBuilder setExecutorServiceThreads(int threadCount) {
+    @Override
+    public CogClientBuilder setExecutorServiceThreads(int threadCount) {
         ioPool = Executors.newFixedThreadPool(threadCount);
         return this;
     }
 
-    @Override public CogClientBuilder addResultMapperFactory(CogResultMapperFactory factory) {
+    @Override
+    public CogClientBuilder addResultMapperFactory(CogResultMapperFactory factory) {
         this.resultMapperFactoryList.add(factory);
         return this;
     }
 
-    @Override public CogClient build() {
-        if(source == null) {
+    @Override
+    public CogClient build() {
+        if (source == null) {
             throw new CogConfigurationException("No data source provided!");
         }
 
-        if(ioPool == null) {
+        if (ioPool == null) {
             ioPool = Executors.newFixedThreadPool(10);
         }
 

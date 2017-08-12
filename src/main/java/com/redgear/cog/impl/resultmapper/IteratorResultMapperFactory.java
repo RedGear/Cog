@@ -6,6 +6,7 @@ import com.redgear.cog.exception.CogException;
 import com.redgear.cog.exception.CogTimeoutException;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Deque;
 import java.util.Iterator;
 import java.util.concurrent.BlockingDeque;
@@ -22,15 +23,14 @@ public class IteratorResultMapperFactory<T> implements CogResultMapperFactory<T,
 
     @Override
     public boolean isAsync() {
-        return true;
+        return false;
     }
 
     @Override
     public CogResultMapper<T, Iterator> builder() {
         return new CogResultMapper<T, Iterator>() {
 
-            BlockingQueue<T> items = new LinkedBlockingQueue<>();
-            boolean isDone = false;
+            ArrayList<T> items = new ArrayList<>();
 
             @Override
             public void add(T next) {
@@ -39,26 +39,12 @@ public class IteratorResultMapperFactory<T> implements CogResultMapperFactory<T,
 
             @Override
             public void complete() {
-                isDone = true;
+                items.trimToSize();
             }
 
             @Override
             public Iterator build() {
-                return new Iterator<T>() {
-                    @Override
-                    public boolean hasNext() {
-                        return !items.isEmpty() || !isDone;
-                    }
-
-                    @Override
-                    public T next() {
-                        try {
-                            return items.take();
-                        } catch (InterruptedException e) {
-                            throw new CogTimeoutException("Gave up waiting on async result", e);
-                        }
-                    }
-                };
+                return items.iterator();
             }
         };
     }
