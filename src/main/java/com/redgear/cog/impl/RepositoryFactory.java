@@ -11,12 +11,18 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class RepositoryFactory {
 
     private static final Logger log = LoggerFactory.getLogger(RepositoryFactory.class);
     private static final SingletonResultMapperFactory singletonMapper = new SingletonResultMapperFactory();
+    private static final Pattern queryTypePattern = Pattern.compile("^SELECT\\s.*", Pattern.CASE_INSENSITIVE);
     private final CogClient client;
     private final Config config;
 
@@ -43,9 +49,10 @@ public class RepositoryFactory {
             }
 
             @Language("SQL")
-            String query = cogQuery.value();
+            String query = cogQuery.value().trim();
+            boolean isSelect = queryTypePattern.matcher(query).matches();
 
-            String[] args = Arrays.stream(method.getParameters()).map(param -> {
+            List<String> args = Arrays.stream(method.getParameters()).map(param -> {
                 for (Annotation annotation : param.getAnnotations()) {
                     if(annotation instanceof CogParam) {
                         CogParam cogAnnotation = (CogParam) annotation;
@@ -54,9 +61,9 @@ public class RepositoryFactory {
                 }
                 // No annotation
                 return param.getName();
-            }).toArray(String[]::new);
+            }).collect(Collectors.toList());
 
-            log.debug("Repository method: {} args: {}", method, args);
+            log.debug("Repository method: {} args: {}, is select query: {}", method, args, isSelect);
 
             Type returnType = method.getGenericReturnType();
 
@@ -85,13 +92,15 @@ public class RepositoryFactory {
                     throw new CogReflectionException("Cannot build repository with method " + method + " as it has an illegal return type " + returnType + ". No CogResultMapperFactory for type: " + outerType + " has been registered. ");
                 }
 
-                CogStatement<?> statement = client.prepareStatement(query, innerType);
-                methods.put(method, new RepositoryCall(statement, args, mapperFactory));
+                CogStatementImpl statement = (CogStatementImpl) client.prepareStatement(query, innerType);
+                statement.validateArguments(args);
+                methods.put(method, new RepositoryCall(statement, args, mapperFactory, isSelect));
             } else if (returnType instanceof Class) {
                 Class<?> result = (Class<?>) returnType;
 
-                CogStatement<?> statement = client.prepareStatement(query, result);
-                methods.put(method, new RepositoryCall(statement, args, singletonMapper));
+                CogStatementImpl statement = (CogStatementImpl) client.prepareStatement(query, result);
+                statement.validateArguments(args);
+                methods.put(method, new RepositoryCall(statement, args, singletonMapper, isSelect));
             } else {
                 throw new CogReflectionException("Cannot build repository with method " + method + " as it has an illegal return type " + returnType);
             }
@@ -114,19 +123,26 @@ public class RepositoryFactory {
     private static class RepositoryCall {
 
         private final CogStatement statement;
-        private final String[] params;
+        private final List<String> params;
         private final CogResultMapperFactory mapperFactory;
+        private final boolean isSelect;
 
-        private RepositoryCall(CogStatement statement, String[] params, CogResultMapperFactory mapperFactory) {
+        private RepositoryCall(CogStatement statement, List<String> params, CogResultMapperFactory mapperFactory, boolean isSelect) {
             this.statement = statement;
             this.params = params;
             this.mapperFactory = mapperFactory;
+            this.isSelect = isSelect;
         }
 
         public Object call(Object[] args) {
-            return statement.exec(Lambda.zipMap(Lambda.arrayIterator(params), Lambda.arrayIterator(args)), mapperFactory);
-        }
+            Map<String, ?> input = Lambda.zipMap(params.iterator(), Lambda.arrayIterator(args));
 
+            if (isSelect) {
+                return statement.query(input, mapperFactory);
+            } else {
+                return statement.execute(input, mapperFactory);
+            }
+        }
     }
 
 }

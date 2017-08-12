@@ -1,8 +1,8 @@
-package com.redgear.cog.impl;
+package com.redgear.cog;
 
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import com.redgear.cog.impl.ResultContext;
+
 import java.sql.SQLException;
 
 public interface TypeConverter<T> {

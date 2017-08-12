@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 
 public class CogClientImpl implements CogClient {
 
-    private static final Pattern pattern = Pattern.compile("(:\\w+)");
+    private static final Pattern pattern = Pattern.compile("(:[\\w\\.]+)");
     private final Config config;
     private final RepositoryFactory repositoryFactory;
 
@@ -20,16 +20,18 @@ public class CogClientImpl implements CogClient {
         this.repositoryFactory = new RepositoryFactory(this, config);
     }
 
-    @Override public <T> T buildRepository(Class<T> clazz) {
+    @Override
+    public <T> T buildRepository(Class<T> clazz) {
         return repositoryFactory.create(clazz);
     }
 
-    @Override public <T> CogStatement<T> prepareStatement(@Language("SQL") String query, Class<T> resultType) {
+    @Override
+    public <T> CogStatement<T> prepareStatement(@Language("SQL") String query, Class<T> resultType) {
         // Process named params
         List<String> params = new ArrayList<>();
         Matcher matcher = pattern.matcher(query);
 
-        while(matcher.find()) {
+        while (matcher.find()) {
             // Substring 1 to cut out the ':'
             params.add(matcher.group(1).substring(1));
         }

@@ -1,5 +1,6 @@
 package com.redgear.cog.impl;
 
+import com.redgear.cog.TypeConverter;
 import com.redgear.cog.exception.CogConversionException;
 import com.redgear.cog.exception.CogReflectionException;
 import org.slf4j.Logger;
@@ -117,7 +118,7 @@ public class TypeDataFactory {
 
         }
 
-        return new TypeData<>(clazz, constructor, fieldData);
+        return new BeanTypeData<>(clazz, constructor, fieldData);
     }
 
     private static String camelCase(String in) {

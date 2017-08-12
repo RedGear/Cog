@@ -30,6 +30,9 @@ public class RepositoryTest {
         Assert.assertEquals(jenny, personRepo.findOneByFullName("Jenny", "Diesel"));
         Assert.assertEquals(dillon, personRepo.findOneFutureByFullName("Dillon", "Callis").get(5, TimeUnit.SECONDS));
         Assert.assertEquals(Arrays.asList(dillon, malcolm, jenny), personRepo.getAllPeopleAsync().toList().get(5, TimeUnit.SECONDS));
+        Assert.assertEquals(malcolm, personRepo.findOneByExample(malcolm));
+        Assert.assertEquals(jenny, personRepo.findOneByMap(MapBuilder.mapOf("firstName", "Jenny").put("lastName", "Diesel").build()));
+        Assert.assertEquals(19, personRepo.findAgeByExample(jenny));
     }
 
 }

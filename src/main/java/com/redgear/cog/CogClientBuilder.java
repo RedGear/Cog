@@ -1,7 +1,5 @@
 package com.redgear.cog;
 
-import com.redgear.cog.impl.TypeConverter;
-
 import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.concurrent.ExecutorService;

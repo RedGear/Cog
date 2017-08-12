@@ -39,6 +39,11 @@ public class FutureResultMapperFactory<T> implements CogResultMapperFactory<T, F
             }
 
             @Override
+            public void error(Throwable t) {
+                result.completeExceptionally(t);
+            }
+
+            @Override
             public void complete() {
                 if(!result.isDone()) {
                     result.completeExceptionally(new CogQueryException("Query expected single result but found none."));

@@ -21,7 +21,7 @@ public class BasicTest {
         CogStatement<Person> getAllPeople = client.prepareStatement("select first_name, last_name, age from person where last_name = :lastName", Person.class);
 
 
-        getAllPeople.exec(mapOf("lastName", "Callis").build())
+        getAllPeople.query(mapOf("lastName", "Callis").build())
                 .forEach(person -> log.info("Person: {}", person));
 
     }

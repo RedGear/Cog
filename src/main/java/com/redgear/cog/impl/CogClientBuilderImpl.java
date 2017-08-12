@@ -1,9 +1,6 @@
 package com.redgear.cog.impl;
 
-import com.redgear.cog.CogClient;
-import com.redgear.cog.CogClientBuilder;
-import com.redgear.cog.CogDataSourceBuilder;
-import com.redgear.cog.CogResultMapperFactory;
+import com.redgear.cog.*;
 import com.redgear.cog.exception.CogConfigurationException;
 import com.redgear.cog.impl.resultmapper.*;
 
@@ -57,6 +54,8 @@ public class CogClientBuilderImpl implements CogClientBuilder {
         addBaseConverter(Timestamp.class, ResultContext::getTimestamp);
         addBaseConverter(URL.class, ResultContext::getURL);
         addBaseConverter(NClob.class, ResultContext::getNClob);
+        addBaseConverter(Void.class, context -> null);
+        addBaseConverter(void.class, context -> null);
         baseConverters.trimToSize();
 
         baseMapperFactorys.add(CollectionResultMapperFactory.build(ArrayList.class, List.class));

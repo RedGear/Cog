@@ -28,6 +28,11 @@ public class ResultSourceResultMapperFactory<T> implements CogResultMapperFactor
             }
 
             @Override
+            public void error(Throwable t) {
+                out.error(t);
+            }
+
+            @Override
             public void complete() {
                 out.complete();
             }
