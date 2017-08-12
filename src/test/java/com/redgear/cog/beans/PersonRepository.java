@@ -20,6 +20,6 @@ public interface PersonRepository {
 
 
     @CogQuery("select * from person where first_name = :firstName and last_name = :lastName")
-    Future<Person> findOneFutureByFullName(String firstName, String lastName);
+    Future<Person> findOneFutureByFullName(@CogParam("firstName") String firstName, @CogParam("lastName") String lastName);
 
 }

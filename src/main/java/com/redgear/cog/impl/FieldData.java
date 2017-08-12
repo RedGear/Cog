@@ -7,14 +7,12 @@ public class FieldData<T> {
 
     private final String name;
     private final Class<T> type;
-    private final BeanGetter<T> getter;
-    private final BeanSetter<T> setter;
+    private final BiConsumer<ResultContext, T> setter;
 
 
-    public FieldData(String name, Class<T> type, BeanGetter<T> getter, BeanSetter<T> setter) {
+    public FieldData(String name, Class<T> type, BiConsumer<ResultContext, T> setter) {
         this.name = name;
         this.type = type;
-        this.getter = getter;
         this.setter = setter;
     }
 
@@ -26,11 +24,7 @@ public class FieldData<T> {
         return type;
     }
 
-    public BeanGetter<T> getGetter() {
-        return getter;
-    }
-
-    public BeanSetter<T> getSetter() {
+    public BiConsumer<ResultContext, T> getSetter() {
         return setter;
     }
 }

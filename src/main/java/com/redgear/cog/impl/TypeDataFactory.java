@@ -15,6 +15,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
 public class TypeDataFactory {
@@ -69,7 +70,7 @@ public class TypeDataFactory {
             String camelName = camelCase(fieldName);
 
             //Set up setter
-            BeanSetter<T> beanSetter;
+            BiConsumer<ResultContext, T> beanSetter;
 
             AtomicReference<MethodHandle> setterRef = new AtomicReference<>(null);
 
@@ -94,12 +95,12 @@ public class TypeDataFactory {
             if (setterHandle == null)
                 throw new CogReflectionException("Could not access field: " + fieldName);
 
-            beanSetter = (obj, resultSet, label) -> {
+            beanSetter = (context, obj) -> {
 
                 Object converted;
 
                 try {
-                    converted = converter.read(resultSet, label);
+                    converted = converter.read(context);
                 } catch (Throwable e) {
                     throw new CogConversionException("Could not read result bean " + f, e);
                 }
@@ -112,47 +113,7 @@ public class TypeDataFactory {
 
             };
 
-
-            //Set up the getter
-            BeanGetter<T> beanGetter;
-
-            AtomicReference<MethodHandle> getterRef = new AtomicReference<>(null);
-
-            try {
-                //Try to use getter method if it exists.
-                Method getter = clazz.getMethod("get" + camelName);
-
-                if (!getter.getReturnType().equals(type))
-                    throw new NoSuchMethodException("Result type of 'get" + camelName + "()' is different than that of field " + fieldName + " conclusion: This is not a field getter. Ignoring getter now. ");
-
-                getterRef.set(lookup.unreflect(getter));
-            } catch (IllegalAccessException | NoSuchMethodException e) {
-                //If there is no getter method, get the field directly.
-                f.setAccessible(true);
-
-                try {
-                    getterRef.set(lookup.unreflectGetter(f));
-                } catch (IllegalAccessException e2) {
-                    throw new CogConversionException("Could not access field. ", e2);
-                }
-            }
-
-            MethodHandle getterHandle = getterRef.get();
-
-            if (getterHandle == null)
-                throw new CogConversionException("Could not access field: " + fieldName);
-
-            beanGetter = (obj, statement, index) -> {
-                try {
-                    Object value = getterHandle.bindTo(obj).invoke();
-
-                    converter.write(value, statement, index);
-                } catch (Throwable e) {
-                    throw new CogReflectionException("Could not get property with getter. ", e);
-                }
-            };
-
-            fieldData.add(new FieldData(fieldName, type, beanGetter, beanSetter));
+            fieldData.add(new FieldData(fieldName, type, beanSetter));
 
         }
 

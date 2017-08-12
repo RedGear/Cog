@@ -9,8 +9,6 @@ public interface TypeConverter<T> {
 
     Class<T> getType();
 
-    void write(T obj, PreparedStatement statement, int index) throws SQLException;
-
-    T read(ResultSet result, String label) throws SQLException;
+    T read(ResultContext context) throws SQLException;
 
 }

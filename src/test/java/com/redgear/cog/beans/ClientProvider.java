@@ -9,15 +9,15 @@ public class ClientProvider {
     static {
         client = CogClient.builder()
                 .buildDataSource()
-//                    .setDriverClassName("org.postgresql.Driver")
-//                    .setUrl("jdbc:postgresql://localhost:5432/postgres")
-//                    .setUsername("postgres")
-//                    .setPassword("mysecretpassword")
+                    .setDriverClassName("org.postgresql.Driver")
+                    .setUrl("jdbc:postgresql://localhost:5432/postgres")
+                    .setUsername("postgres")
+                    .setPassword("mysecretpassword")
 
-                .setDriverClassName("com.mysql.cj.jdbc.Driver")
-                .setUrl("jdbc:mysql://localhost:3306/test")
-                .setUsername("root")
-                .setPassword("my-secret-pw")
+//                .setDriverClassName("com.mysql.cj.jdbc.Driver")
+//                .setUrl("jdbc:mysql://localhost:3306/test")
+//                .setUsername("root")
+//                .setPassword("my-secret-pw")
 
                 .build()
                 .build();

@@ -1,47 +1,20 @@
 package com.redgear.cog;
 
-import org.apache.commons.dbcp2.BasicDataSource;
-
 import java.sql.Driver;
 
-public class CogDataSourceBuilder {
+/**
+ * Created by LordBlackHole on 2017-06-05.
+ */
+public interface CogDataSourceBuilder {
+    CogDataSourceBuilder setUrl(String url);
 
-    private final CogClientBuilder builder;
-    private final BasicDataSource source = new BasicDataSource();
+    CogDataSourceBuilder setDriverClassName(String driverClassName);
 
+    CogDataSourceBuilder setDriver(Driver driver);
 
-    public CogDataSourceBuilder(CogClientBuilder builder) {
-        this.builder = builder;
-    }
+    CogDataSourceBuilder setUsername(String username);
 
-    public CogDataSourceBuilder setUrl(String url) {
-        source.setUrl(url);
-        return this;
-    }
+    CogDataSourceBuilder setPassword(String password);
 
-    public CogDataSourceBuilder setDriverClassName(String driverClassName) {
-        source.setDriverClassName(driverClassName);
-        return this;
-    }
-
-    public CogDataSourceBuilder setDriver(Driver driver) {
-        source.setDriver(driver);
-        return this;
-    }
-
-    public CogDataSourceBuilder setUsername(String username) {
-        source.setUsername(username);
-        return this;
-    }
-
-    public CogDataSourceBuilder setPassword(String password) {
-        source.setPassword(password);
-        return this;
-    }
-
-
-    public CogClientBuilder build() {
-        return builder.setDataSource(source);
-    }
-
+    CogClientBuilder build();
 }

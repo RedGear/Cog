@@ -2,6 +2,7 @@ package com.redgear.cog.impl;
 
 import com.redgear.cog.CogResultMapperFactory;
 import com.redgear.cog.exception.CogConversionException;
+import org.apache.commons.dbutils.AsyncQueryRunner;
 import org.apache.commons.dbutils.QueryRunner;
 
 import javax.sql.DataSource;
@@ -15,6 +16,7 @@ public class Config {
     private final DataSource source;
 
     private final QueryRunner runner;
+    private final AsyncQueryRunner asyncRunner;
     private final Map<Class<?>, TypeConverter> converterMap = new HashMap<>();
     private final Map<Class<?>, TypeData<?>> typeDataCache = new HashMap<>();
     private final TypeDataFactory typeDataFactory = new TypeDataFactory(this);
@@ -27,6 +29,7 @@ public class Config {
         converterMap.forEach(typeConverter -> this.converterMap.put(typeConverter.getType(), typeConverter));
         resultMapperFactoryList.forEach(factory -> this.resultMapperFactoryMap.put(factory.type(), factory));
         runner = new QueryRunner(source);
+        asyncRunner = new AsyncQueryRunner(ioPool, runner);
     }
 
     public DataSource getSource() {
@@ -57,6 +60,10 @@ public class Config {
 
     public QueryRunner getRunner() {
         return runner;
+    }
+
+    public AsyncQueryRunner getAsyncRunner() {
+        return asyncRunner;
     }
 
     public ExecutorService getIoPool() {

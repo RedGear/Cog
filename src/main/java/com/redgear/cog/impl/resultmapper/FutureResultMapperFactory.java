@@ -2,6 +2,7 @@ package com.redgear.cog.impl.resultmapper;
 
 import com.redgear.cog.CogResultMapper;
 import com.redgear.cog.CogResultMapperFactory;
+import com.redgear.cog.exception.CogQueryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,13 +31,17 @@ public class FutureResultMapperFactory<T> implements CogResultMapperFactory<T, F
 
             @Override
             public void add(T next) {
-                result.complete(next);
+                if (result.isDone()) {
+                    result.obtrudeException(new CogQueryException("Query expected single result but got more than one."));
+                } else {
+                    result.complete(next);
+                }
             }
 
             @Override
             public void complete() {
                 if(!result.isDone()) {
-                    result.complete(null);
+                    result.completeExceptionally(new CogQueryException("Query expected single result but found none."));
                 }
             }
 

@@ -22,27 +22,24 @@ public class OptionalResultMapperFactory<T> implements CogResultMapperFactory<T,
     public CogResultMapper<T, Optional> builder() {
         return new CogResultMapper<T, Optional>() {
 
-            Optional<T> value;
+            T value;
 
             @Override
             public void add(T next) {
                 if (value != null) {
                     throw new CogQueryException("Query expected single result but got more than one.");
                 } else {
-                    value = Optional.of(next);
+                    value = next;
                 }
             }
 
             @Override
             public void complete() {
-                if (value == null) {
-                    value = Optional.empty();
-                }
             }
 
             @Override
             public Optional build() {
-                return value;
+                return Optional.ofNullable(value);
             }
         };
     }

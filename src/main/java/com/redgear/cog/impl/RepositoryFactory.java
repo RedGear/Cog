@@ -3,6 +3,7 @@ package com.redgear.cog.impl;
 import com.redgear.cog.*;
 import com.redgear.cog.exception.CogReflectionException;
 import com.redgear.cog.impl.resultmapper.SingletonResultMapperFactory;
+import org.intellij.lang.annotations.Language;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,6 +42,7 @@ public class RepositoryFactory {
                 throw new CogReflectionException("Missing a @CogQuery annotation for method: " + method);
             }
 
+            @Language("SQL")
             String query = cogQuery.value();
 
             String[] args = Arrays.stream(method.getParameters()).map(param -> {
@@ -87,12 +89,6 @@ public class RepositoryFactory {
                 methods.put(method, new RepositoryCall(statement, args, mapperFactory));
             } else if (returnType instanceof Class) {
                 Class<?> result = (Class<?>) returnType;
-
-                TypeConverter converter = config.getConverter(result);
-
-                if (converter != null) {
-                    // TODO: Handle single type returns
-                }
 
                 CogStatement<?> statement = client.prepareStatement(query, result);
                 methods.put(method, new RepositoryCall(statement, args, singletonMapper));
