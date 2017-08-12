@@ -21,18 +21,18 @@ public class RepositoryTest {
 
         PersonRepository personRepo = client.buildRepository(PersonRepository.class);
 
-        Person dillon = new Person("Dillon", "Callis", 25);
-        Person malcolm = new Person("Malcolm", "Callis", 23);
-        Person jenny = new Person("Jenny", "Diesel", 19);
+        Person dave = new Person("Dave", "Smith", 35);
+        Person mary = new Person("Mary", "Smith", 34);
+        Person henry = new Person("Henry", "Robertson", 46);
 
-        Assert.assertEquals(Arrays.asList(dillon, malcolm, jenny), personRepo.getAllPeople());
-        Assert.assertEquals(Arrays.asList(dillon, malcolm), personRepo.findByLastName("Callis"));
-        Assert.assertEquals(jenny, personRepo.findOneByFullName("Jenny", "Diesel"));
-        Assert.assertEquals(dillon, personRepo.findOneFutureByFullName("Dillon", "Callis").get(5, TimeUnit.SECONDS));
-        Assert.assertEquals(Arrays.asList(dillon, malcolm, jenny), personRepo.getAllPeopleAsync().toList().get(5, TimeUnit.SECONDS));
-        Assert.assertEquals(malcolm, personRepo.findOneByExample(malcolm));
-        Assert.assertEquals(jenny, personRepo.findOneByMap(MapBuilder.mapOf("firstName", "Jenny").put("lastName", "Diesel").build()));
-        Assert.assertEquals(19, personRepo.findAgeByExample(jenny));
+        Assert.assertEquals(Arrays.asList(dave, mary, henry), personRepo.getAllPeople());
+        Assert.assertEquals(Arrays.asList(dave, mary), personRepo.findByLastName("Smith"));
+        Assert.assertEquals(henry, personRepo.findOneByFullName("Henry", "Robertson"));
+        Assert.assertEquals(dave, personRepo.findOneFutureByFullName("Dave", "Smith").get(5, TimeUnit.SECONDS));
+        Assert.assertEquals(Arrays.asList(dave, mary, henry), personRepo.getAllPeopleAsync().toList().get(5, TimeUnit.SECONDS));
+        Assert.assertEquals(mary, personRepo.findOneByExample(mary));
+        Assert.assertEquals(henry, personRepo.findOneByMap(MapBuilder.mapOf("firstName", "Henry").put("lastName", "Robertson").build()));
+        Assert.assertEquals(19, personRepo.findAgeByExample(henry));
     }
 
 }
