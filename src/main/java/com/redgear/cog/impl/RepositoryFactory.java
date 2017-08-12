@@ -13,8 +13,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Future;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -42,7 +40,7 @@ public class RepositoryFactory {
 
         for (Method method : source.getMethods()) {
 
-            CogQuery cogQuery = method.getAnnotation(CogQuery.class);
+            Query cogQuery = method.getAnnotation(Query.class);
 
             if (cogQuery == null) {
                 throw new CogReflectionException("Missing a @CogQuery annotation for method: " + method);
@@ -54,8 +52,8 @@ public class RepositoryFactory {
 
             List<String> args = Arrays.stream(method.getParameters()).map(param -> {
                 for (Annotation annotation : param.getAnnotations()) {
-                    if(annotation instanceof CogParam) {
-                        CogParam cogAnnotation = (CogParam) annotation;
+                    if(annotation instanceof Param) {
+                        Param cogAnnotation = (Param) annotation;
                         return cogAnnotation.value();
                     }
                 }
