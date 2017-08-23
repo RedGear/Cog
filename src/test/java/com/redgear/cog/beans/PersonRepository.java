@@ -1,8 +1,8 @@
 package com.redgear.cog.beans;
 
-import com.redgear.cog.Param;
-import com.redgear.cog.Query;
-import com.redgear.cog.ResultSource;
+import com.redgear.cog.core.Param;
+import com.redgear.cog.repo.Query;
+import com.redgear.cog.core.ResultSource;
 
 import java.util.List;
 import java.util.Map;

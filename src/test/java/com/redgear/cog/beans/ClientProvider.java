@@ -1,10 +1,12 @@
 package com.redgear.cog.beans;
 
-import com.redgear.cog.CogClient;
+import com.redgear.cog.repo.CogClient;
+import com.redgear.cog.rest.CogServer;
 
 public class ClientProvider {
 
     private static final CogClient client;
+    private static final CogServer server;
 
     static {
         client = CogClient.builder()
@@ -21,6 +23,8 @@ public class ClientProvider {
 
                 .build()
                 .build();
+
+        server = CogServer.builder().build();
     }
 
 
@@ -28,5 +32,7 @@ public class ClientProvider {
         return client;
     }
 
-
+    public static CogServer getServer() {
+        return server;
+    }
 }
